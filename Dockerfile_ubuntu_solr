@@ -1,0 +1,37 @@
+# Use Ubuntu 22.04 as the base image
+FROM ubuntu:22.04
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive \
+    SOLR_VERSION=8.11.2 \
+    MYSQL_JDBC_DRIVER_VERSION=8.1.0
+
+# Update and install dependencies
+RUN apt-get update && apt-get install -y \
+    openjdk-11-jdk \
+    wget \
+    curl \
+    unzip \
+    lsof \
+    gnupg \
+    software-properties-common \
+    && apt-get clean
+
+# Add Solr user and directory
+RUN useradd -m -s /bin/bash solr
+
+# Download and install Solr
+RUN wget https://archive.apache.org/dist/lucene/solr/$SOLR_VERSION/solr-$SOLR_VERSION.tgz \
+    && tar -xzf solr-$SOLR_VERSION.tgz \
+    && bash solr-$SOLR_VERSION/bin/install_solr_service.sh solr-$SOLR_VERSION.tgz \
+    && rm -rf solr-$SOLR_VERSION solr-$SOLR_VERSION.tgz
+
+# Download and install MySQL JDBC driver
+RUN wget https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/8.1.0/mysql-connector-j-8.1.0.jar \
+    -O /opt/solr/server/lib/mysql-connector-j-8.1.0.jar
+
+# Expose Solr and necessary ports
+EXPOSE 8983
+
+# Attach a dummy process to keep the container running
+CMD ["tail", "-f", "/dev/null"]

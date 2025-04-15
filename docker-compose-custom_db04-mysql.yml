@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+  db04:
+    image: custom_basemysql:2.0 # Use the custom MySQL image
+    hostname: db04.proprofs.com  # Set the hostname to your desired name
+    tty: true       # Keeps the container running
+    volumes:
+      - /opt/share/db/db04/db04_var_lib_mysql:/var/lib/mysql  # Persistent MySQL data
+      - /opt/share/db/db04/db04_var_log_mysql:/var/log/mysql
+      - /opt/share/jumper_dba/mysql-confs/db04:/etc/mysql  # Mount my.cnf
+    networks:
+      - my_overlay_network
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"  # Limit MySQL container to 2 CPUs
+          memory: "3G"  # Limit MySQL container to 3GB of RAM
+        reservations:
+          cpus: "1.0"  # Ensure a minimum of 1 CPU is reserved
+          memory: "1G"  # Ensure a minimum of 1GB of RAM is reserved
+    ports:
+      - "3125:3306"  # Port forwarding for external access to MySQL
+    environment:
+      MYSQL_ROOT_PASSWORD: jsbdK76WS8aR5
+networks:
+  my_overlay_network:
+    external: true

@@ -1,0 +1,52 @@
+# Use Ubuntu 22.04 as the base image
+FROM ubuntu:22.04
+
+# Set non-interactive installation mode
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Update package list and install Nginx, PHP, and extensions
+RUN apt-get update && \
+    apt-get install -y \
+    nginx \
+    curl \
+    wget \
+    vim \
+    unzip \
+    iproute2 \
+    net-tools \
+    php8.1 \
+    php8.1-cli \
+    php8.1-fpm \
+    php8.1-common \
+    php8.1-opcache \
+    php8.1-pdo \
+    php8.1-tidy \
+    php8.1-mysql \
+    php8.1-zip \
+    php8.1-gd \
+    php8.1-mbstring \
+    php8.1-curl \
+    php8.1-xml \
+    php8.1-bcmath \
+    php8.1-imagick \
+    php8.1-msgpack && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Set the working directory
+WORKDIR /root
+
+# Create directories for website mounts
+RUN mkdir -p /var/www/web/proprofsflashcards.com
+
+# Copy Nginx configuration files to conf.d for automatic loading
+COPY nginx/app014/confs/upstreams.conf /etc/nginx/conf.d/upstreams.conf
+COPY nginx/app014/confs/www.proprofsflashcards.com.conf /etc/nginx/conf.d/www.proprofsflashcards.com.conf
+
+# Start services directly in CMD
+CMD ["/bin/bash", "-c", "php-fpm & nginx -g 'daemon off;'"]
+
+# Set the hostname for the container
+ENV HOSTNAME=app014.proprofs.com
+
+# Expose Nginx port (80)
+EXPOSE 80

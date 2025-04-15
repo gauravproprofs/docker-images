@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+  ubuntu_mysql:
+    image: ubuntu_mysql:2.0  # Use the custom Ubuntu image with MySQL installed
+    networks:
+      - my_overlay_network
+    deploy:
+      resources:
+        limits:
+          cpus: "3.0"  # Limit the container to 3 CPUs
+          memory: "6G"  # Limit the container to 6GB of RAM
+        reservations:
+          cpus: "1.0"  # Ensure a minimum of 1 CPU is reserved
+          memory: "2G"  # Ensure a minimum of 2GB of RAM is reserved
+    ports:
+      - "3126:3306"  # Port forwarding for external access to MySQL
+    environment:
+      MYSQL_ROOT_PASSWORD: jsbdK76WS8aR5@  # Set a root password for MySQL
+    command: ["bash", "-c", "service mysql start && tail -f /dev/null"]  # Start MySQL service
+
+networks:
+  my_overlay_network:
+    external: true

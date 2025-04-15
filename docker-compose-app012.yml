@@ -1,0 +1,22 @@
+version: "3.8"
+services:
+  app012:
+    image: app012:1.0
+    volumes:
+      - /opt/share/apps/app012/proprofsdiscuss.com:/var/www/web/proprofsdiscuss.com
+      - ./apache-confs/app012/confs:/etc/apache2/conf.d
+      - /opt/share/apps/logs/app012:/var/log/apache2
+    networks:
+      - my_overlay_network
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "3.0"  # Limit to 3 CPUs
+          memory: "4G"  # Limit to 4GB of RAM
+        reservations:
+          cpus: "1.0"  # Minimum of 1 CPU
+          memory: "1G"  # Minimum of 1GB of RAM
+networks:
+  my_overlay_network:
+    external: true

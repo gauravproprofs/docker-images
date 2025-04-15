@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+  nginx_lb:
+    image: nginx_lb:1.0  # Assuming you've tagged the Nginx image
+    networks:
+      - my_overlay_network
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "2"  # Limit to 2 CPUs
+          memory: "3G"  # Limit to 3GB of RAM
+        reservations:
+          cpus: "1"  # Reserve 1 CPUs
+          memory: "1G"  # Reserve 1MB of RAM
+    ports:
+      - "80:80"  # Forward host port 80 to container port 80
+      - "443:443"
+    volumes:
+      - ./nginx/confs:/etc/nginx/conf.d  # Mount the host directory to the container
+networks:
+  my_overlay_network:
+    external: true

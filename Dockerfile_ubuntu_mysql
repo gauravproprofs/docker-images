@@ -1,0 +1,17 @@
+# Start with Ubuntu 22.04 base image
+FROM ubuntu:22.04
+
+# Set environment variables to avoid interactive prompts during installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Update package list and install required packages, including MySQL server
+RUN apt-get update && \
+    apt-get install -y wget lsb-release gnupg vim iproute2 net-tools mysql-server && \
+    # Cleanup unnecessary files
+    rm -rf /var/lib/apt/lists/*
+
+# Expose MySQL port
+EXPOSE 3306
+
+# Start MySQL server by default on container start
+CMD ["mysqld"]

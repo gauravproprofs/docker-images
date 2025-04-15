@@ -1,0 +1,74 @@
+FROM php:8.1-fpm-alpine
+
+# Install basic dependencies
+RUN apk add --no-cache \
+    vim \
+    bzip2-dev \
+    zlib-dev \
+    mysql-client \
+    iproute2 \
+    wget \
+    less \
+    gnupg \
+    ca-certificates \
+    net-tools \
+    iputils-ping \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    libxml2-dev \
+    libzip-dev \
+    tidyhtml-dev \
+    curl-dev \
+    gettext-dev \
+    icu-dev \
+    oniguruma-dev \
+    libxslt-dev \
+    nginx \
+    postfix \
+    zip
+
+# Install common PHP extensions
+RUN docker-php-ext-install \
+    bz2 \
+    calendar \
+    curl \
+    exif \
+    gd \
+    gettext \
+    intl \
+    mbstring \
+    mysqli \
+    opcache
+
+# Install dom extension separately to ensure it is available for XML-related extensions
+RUN docker-php-ext-install dom
+
+# Now install all other XML-related extensions
+RUN docker-php-ext-install \
+    shmop \
+    sockets \
+    sysvmsg \
+    sysvsem \
+    sysvshm \
+    tidy \
+    xml \
+    #xmlreader \
+    xmlwriter \
+    xsl \
+    zip
+
+# Install and configure Postfix (as Sendmail alternative)
+RUN echo "sendmail_path = /usr/sbin/sendmail -t -i" >> /usr/local/etc/php/conf.d/sendmail.ini
+
+# Create directories for website mounts
+RUN mkdir -p /var/www/web/proprofsflashcards.com
+
+# Start services directly in CMD
+CMD ["/bin/sh", "-c", "service postfix start && php-fpm & nginx -g 'daemon off;'"]
+
+# Set the hostname for the container
+ENV HOSTNAME=app014.proprofs.com
+
+# Expose Nginx port (80)
+EXPOSE 80

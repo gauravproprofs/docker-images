@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+  db03:
+    image: db01:8.0  # Use the custom MySQL image
+    environment:
+      MYSQL_ROOT_PASSWORD: jsbdK76WS8aR5
+      #MYSQL_DATABASE: testdb1
+      #MYSQL_USER: appuser
+      #MYSQL_PASSWORD: hslDG82fR9n1F
+    volumes:
+      - /opt/share/db/db03/db03_var_lib_mysql:/var/lib/mysql  # Persistent MySQL data
+      - /opt/share/db/db03/db03_var_log_mysql:/var/log/mysql
+      - /opt/share/jumper_dba/mysql-confs/db03/my.cnf:/etc/mysql/my.cnf  # Mount my.cnf
+    networks:
+      - my_overlay_network
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"  # Limit MySQL container to 2 CPUs
+          memory: "3G"  # Limit MySQL container to 3GB of RAM
+        reservations:
+          cpus: "1.0"  # Ensure a minimum of 1 CPU is reserved
+          memory: "2G"  # Ensure a minimum of 2GB of RAM is reserved
+    ports:
+    - "3124:3306"  # Port forwarding for external access to MySQL
+networks:
+  my_overlay_network:
+    external: true

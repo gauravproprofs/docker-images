@@ -1,0 +1,9 @@
+# Use the official MySQL image from Docker Hub
+FROM mysql:8.0
+
+# Add custom configuration or initialization scripts if needed
+# COPY my_custom.cnf /etc/mysql/my.cnf
+# COPY init.sql /docker-entrypoint-initdb.d/
+
+# Expose the default MySQL port
+EXPOSE 3306

@@ -1,0 +1,18 @@
+version: "3.8"
+services:
+  ubuntubase:
+    image: baseubuntu:1.0  # Use the custom Ubuntu image with MySQL installed
+    hostname: db06  # Set the hostname to your desired name
+    networks:
+      - my_overlay_network
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"  # Limit the container to 3 CPUs
+          memory: "4G"  # Limit the container to 6GB of RAM
+        reservations:
+          cpus: "1.0"  # Ensure a minimum of 1 CPU is reserved
+          memory: "2G"  # Ensure a minimum of 2GB of RAM is reserved
+networks:
+  my_overlay_network:
+    external: true

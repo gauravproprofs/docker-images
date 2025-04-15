@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  mail:
+    image: mailserver:1.0
+    command: ['sleep', 'infinity']
+    hostname: mail.proprofs.io  # Set the hostname
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "2.0"  # Limit to 2 CPUs
+          memory: "2G"  # Limit to 2GB of RAM
+    networks:
+      - my_overlay_network
+    ports:
+      - "2025:25"  # Expose SMTP port
+      - "2587:587"  # Expose submission port (optional)
+
+networks:
+  my_overlay_network:
+    external: true

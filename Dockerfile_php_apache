@@ -1,0 +1,83 @@
+# Base image
+FROM php:8.1-apache
+
+# Install necessary PHP extensions
+RUN apt-get update && apt-get install -y \
+    sendmail \
+    zip \
+    curl \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libicu-dev \
+    libxml2-dev \
+    libmcrypt-dev \
+    libzip-dev \
+    libtidy-dev \
+    iproute2 \
+    net-tools \
+    && docker-php-ext-install -j$(nproc) \
+    bcmath \
+    gd \
+    intl \
+    mysqli \
+    opcache \
+    pdo \
+    tidy \
+    zip \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install and configure Sendmail
+RUN echo "sendmail_path = /usr/sbin/sendmail -t -i" >> /usr/local/etc/php/conf.d/sendmail.ini
+
+# Create directories for website mounts
+RUN mkdir -p /var/www/web/metroinfrasys.com \
+    /var/www/web/batia.com \
+    /var/www/web/samairabhatia.com \
+    /var/www/web/asksutra.com \
+    /var/www/web/efitology.com \
+    /var/www/web/ujjala.org \
+    /var/www/web/aminabhatia.com \
+    /var/www/web/stylehive.com \
+    /var/www/web/thisnext.com
+
+# Copy Apache virtual host configuration files
+COPY apache/metroinfrasys.com.conf /etc/apache2/sites-available/metroinfrasys.com.conf
+COPY apache/batia.com.conf /etc/apache2/sites-available/batia.com.conf
+COPY apache/samairabhatia.com.conf /etc/apache2/sites-available/samairabhatia.com.conf
+COPY apache/asksutra.com.conf /etc/apache2/sites-available/asksutra.com.conf
+COPY apache/efitology.com.conf /etc/apache2/sites-available/efitology.com.conf
+COPY apache/ujjala.org.conf /etc/apache2/sites-available/ujjala.org.conf
+COPY apache/aminabhatia.com.conf /etc/apache2/sites-available/aminabhatia.com.conf
+COPY apache/stylehive.com.conf /etc/apache2/sites-available/stylehive.com.conf
+COPY apache/thisnext.com.conf /etc/apache2/sites-available/thisnext.com.conf
+COPY apache/testr1.proprofs.io.conf /etc/apache2/sites-available/testr1.proprofs.io.conf
+
+# Enable Apache modules and site configurations
+RUN a2enmod rewrite headers \
+    && a2dissite 000-default.conf \
+    && a2ensite metroinfrasys.com.conf \
+    && a2ensite batia.com.conf \
+    && a2ensite samairabhatia.com.conf \
+    && a2ensite asksutra.com.conf \
+    && a2ensite efitology.com.conf \
+    && a2ensite ujjala.org.conf \
+    && a2ensite aminabhatia.com.conf \
+    && a2ensite stylehive.com.conf \
+    && a2ensite thisnext.com.conf \
+    && a2ensite testr1.proprofs.io.conf
+
+# Copy entrypoint script
+COPY apache/docker-entrypoint.sh /usr/local/bin/
+
+# Make the entrypoint script executable
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Set the entrypoint
+ENTRYPOINT ["docker-entrypoint.sh"]
+
+# Set the hostname for the container
+ENV HOSTNAME=app011.proprofs.com
+
+# Expose Apache port
+EXPOSE 80

@@ -1,0 +1,78 @@
+# Use Ubuntu 22.04 as the base image
+FROM ubuntu:22.04
+
+# Set environment variables to avoid interactive prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Update package list and install Apache, Nginx, PHP, and extensions necessary packages
+RUN apt-get update && apt-get install -y \
+    apache2 \
+    nginx \
+    memcached \
+    curl \
+    wget \
+    git \
+    iputils-ping \
+    vim \
+    zip \
+    ssh \
+    unzip \
+    software-properties-common \
+    build-essential \
+    iproute2 \
+    net-tools \
+    php8.1 \
+    php8.1-cli \
+    php8.1-fpm \
+    php8.1-common \
+    php8.1-opcache \
+    php8.1-pdo \
+    php8.1-tidy \
+    php8.1-mysql \
+    php8.1-zip \
+    php8.1-gd \
+    php8.1-mbstring \
+    php8.1-curl \
+    php8.1-xml \
+    php8.1-solr \
+    php8.1-bcmath \
+    php8.1-igbinary \
+    php8.1-imagick \
+    php8.1-msgpack \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create directories for website mounts
+RUN mkdir -p /var/log/php-fpm /var/www/web /etc/apache2/conf.d 
+
+# Copy Apache virtual host configuration files
+COPY apache-confs/dev/confs/dev.proprofsdiscuss.com.conf /etc/apache2/sites-available/dev.proprofsdiscuss.com.conf
+COPY apache-confs/dev/confs/dev.proprofsgames.com.conf /etc/apache2/sites-available/dev.proprofsgames.com.conf
+
+# Copy Nginx configuration files to conf.d for automatic loading
+COPY nginx/dev/confs/upstreams.conf /etc/nginx/conf.d/upstreams.conf
+COPY nginx/dev/confs/dev.proprofsflashcards.com.conf /etc/nginx/conf.d/dev.proprofsflashcards.com.conf
+
+# Copy PHP-FPM configuration file to pool.d
+COPY php-fpm/dev/php-flash.conf /etc/php/8.1/fpm/pool.d/php-flash.conf
+COPY php-fpm/dev/php-flash1.conf /etc/php/8.1/fpm/pool.d/php-flash1.conf
+COPY php-fpm/dev/www.conf /etc/php/8.1/fpm/pool.d/www.conf
+
+# Enable Apache modules and site configurations
+RUN a2enmod rewrite headers \
+    && a2dissite 000-default.conf \
+    && a2ensite dev.proprofsdiscuss.com.conf \
+    && a2ensite dev.proprofsgames.com.conf
+	
+# Add User and directory
+RUN useradd -m -s /bin/bash dsharma
+
+# Expose ports
+EXPOSE 80 81 22
+
+# Start both Apache and Nginx
+COPY start-scripts/dev-start-services.sh /usr/local/bin/dev-start-services.sh
+RUN chmod +x /usr/local/bin/dev-start-services.sh
+
+# Default command to start services
+CMD ["/usr/local/bin/dev-start-services.sh"]

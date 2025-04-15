@@ -1,0 +1,39 @@
+# Use an Ubuntu base image
+FROM ubuntu:22.04
+
+# Update package list and install basic utilities
+RUN apt-get update && apt-get install -y \
+    apt-utils \
+    sudo \
+    vim \
+    openssh-server \
+    mysql-client \
+    iproute2 \
+    curl \
+    wget \
+    less \
+    gnupg2 \
+    ca-certificates \
+    net-tools \
+    iputils-ping \
+    curl \
+    openssh-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create directories for website mounts
+RUN mkdir -p /var/www/web/sites
+
+# Create a user for SSH access
+RUN useradd -ms /bin/bash dsharma-psites \
+    && echo 'dsharma-psites:shlEJX76jDKA87A' | chpasswd \
+    && usermod -aG sudo dsharma-psites
+
+# Set the default shell for the new user
+USER dsharma-psites
+WORKDIR /var/www/web
+
+# Expose any ports if needed (optional)
+EXPOSE 22
+
+# Start with bash
+CMD ["/bin/bash"]

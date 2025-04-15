@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+  dev:
+    image: dev:1.0
+    hostname: dev2.proprofs.com
+    volumes:
+      - /opt/share/apps/dev:/var/www/web
+      - /opt/share/apps/logs/dev/apache:/var/log/apache2
+      - /opt/share/apps/logs/dev/nginx:/var/log/nginx
+      - /opt/share/apps/logs/dev/php-fpm:/var/log/php-fpm
+      - ./apache-confs/dev/confs:/etc/apache2/conf.d
+      - ./nginx/dev/confs:/etc/nginx/conf.d
+    networks:
+      - my_overlay_network
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "2.0"  # Limit to 3 CPUs
+          memory: "3G"  # Limit to 3GB of RAM
+        reservations:
+          cpus: "1.0"  # Minimum of 1 CPU
+          memory: "1G"  # Minimum of 1GB of RAM
+    ports:
+      - "2125:22"  # Port forwarding for external access to SSH
+networks:
+  my_overlay_network:
+    external: true

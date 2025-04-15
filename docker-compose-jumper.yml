@@ -1,0 +1,26 @@
+version: "3.8"
+services:
+  jumper:
+    image: jumper:2.0
+    volumes:
+      - /opt/share/apps/app011:/var/www/web/sites
+      - /opt/share/jumper_dba:/home/dba1/data
+      - /opt/share/apps:/opt/data/apps
+    networks:
+      - my_overlay_network
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "2.0"  # Limit to 3 CPUs
+          memory: "2G"  # Limit to 4GB of RAM
+        reservations:
+          cpus: "1.0"  # Minimum of 1 CPU
+          memory: "1G"  # Minimum of 1GB of RAM
+    ports:
+      - "2132:22"
+    stdin_open: true  # Keep the container open
+    tty: true  # Attach a pseudo-TTY for interactivity
+networks:
+  my_overlay_network:
+    external: true

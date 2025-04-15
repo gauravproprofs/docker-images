@@ -1,0 +1,15 @@
+# Use the official Nginx image from the Docker Hub
+FROM nginx:latest
+
+# Create directories for website mounts
+RUN mkdir -p /etc/nginx/ssl
+
+# Copy custom Nginx configuration files
+#COPY nginx/confs /etc/nginx/conf.d
+COPY nginx/ssl /etc/nginx/ssl
+
+# Expose port 80
+EXPOSE 80
+
+# Expose port 443 (HTTPS)
+EXPOSE 443

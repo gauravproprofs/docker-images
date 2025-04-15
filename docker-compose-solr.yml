@@ -1,0 +1,19 @@
+version: "3.8"
+services:
+  solr:
+    image: solr:1.0  # Use the custom Solr image
+    networks:
+      - my_overlay_network
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"  # Limit Solr container to 2 CPUs
+          memory: "4G"  # Limit Solr container to 4GB of RAM
+        reservations:
+          cpus: "1.0"  # Ensure a minimum of 1 CPU is reserved
+          memory: "2G"  # Ensure a minimum of 2GB of RAM is reserved
+    ports:
+    - "8287:8983"  # Port forwarding for external access to MySQL
+networks:
+  my_overlay_network:
+    external: true

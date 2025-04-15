@@ -1,0 +1,5 @@
+FROM phpmyadmin/phpmyadmin:latest
+
+COPY phpmyadmin/config.inc.php /etc/phpmyadmin/
+
+EXPOSE 80

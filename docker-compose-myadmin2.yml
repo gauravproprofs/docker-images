@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  phpmyadmin:
+    image: phpmyadmin:1.0  # Use latest stable version (or specific version based on needs)
+    restart: unless-stopped
+    volumes:
+      - ./phpmyadmin/config.inc.php:/etc/phpmyadmin/config.inc.php
+    networks:
+      - my_overlay_network
+    deploy:
+      replicas: 1           # Number of instances to run
+      resources:
+        limits:
+          cpus: "2.0"        # Limit to 2 CPUs
+          memory: "2G"       # Limit to 2GB of RAM
+        reservations:
+          cpus: "1.0"        # Minimum of 1 CPU
+          memory: "1G"       # Minimum of 1GB of RAM
+      restart_policy:
+        condition: on-failure  # Restart the container on failure
+
+networks:
+  my_overlay_network:
+    external: true  # Use the existing attachable network
